@@ -1,9 +1,0 @@
-Metadata-Version: 2.4
-Name: tagai
-Version: 0.1.0
-Summary: TagAI — Groq · Self-Healing · Git
-Requires-Python: >=3.10
-Description-Content-Type: text/markdown
-Requires-Dist: groq
-Requires-Dist: rich
-Requires-Dist: python-dotenv

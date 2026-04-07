@@ -1,4 +1,0 @@
-[console_scripts]
-devagent = devagent.main:main
-tag = devagent.main:main
-tagai = devagent.main:main
