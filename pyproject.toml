@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tagai"
+version = "0.1.0"
+description = "TagAI — Groq · Self-Healing · Git"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "groq",
+    "rich",
+    "python-dotenv",
+]
+
+[project.scripts]
+tag = "devagent.main:main"
+tagai = "devagent.main:main"
+devagent = "devagent.main:main"
