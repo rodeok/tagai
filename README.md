@@ -24,7 +24,7 @@ TagAI supports multiple providers. You will be prompted to choose one when you f
 
 ### Included Providers:
 - **Groq**: Lightning-fast inference (Llama 3.3, etc.)
-- **OpenAI**: GPT-4o, GPT-4o-mini
+- **OpenAI**: GPT-5
 - **Anthropic**: Claude 3.5 Sonnet, Opus
 - **Google Gemini**: Gemini 1.5 Pro/Flash
 - **Local**: Any OpenAI-compatible endpoint (Ollama, LM Studio)
