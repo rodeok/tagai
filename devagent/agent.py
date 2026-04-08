@@ -113,7 +113,7 @@ def run_agent(user_input, history, ask_permission):
 
 def build_and_heal(task, entry_point, history, ask_permission, max_heal_iterations=10):
     """Iteratively build and fix a file until it runs without errors or max iterations reached."""
-    from self_heal import check_for_errors
+    from .self_heal import check_for_errors
     
     # Initial instruction
     prompt = f"Building '{entry_point}':\n{task}\n\nPlan the code and then write it to the file using write_file tool."
