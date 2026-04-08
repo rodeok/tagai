@@ -12,6 +12,10 @@ dependencies = [
     "groq",
     "rich",
     "python-dotenv",
+    "litellm",
+    "openai",
+    "anthropic",
+    "google-generativeai",
 ]
 
 [project.scripts]

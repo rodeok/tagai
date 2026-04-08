@@ -1,11 +1,13 @@
 # 🤖 TagAI
 
-**TagAI** is an autonomous AI coding assistant powered by Groq. it features a self-healing loop that writes, tests, and fixes code until it works perfectly.
+**TagAI** is an autonomous AI coding assistant that supports a wide range of LLM providers. It features a robust **self-healing loop** that writes, tests, and fixes code until it runs perfectly.
 
 ## ✨ Features
-- **🚀 Ultra-fast Code Generation**: Powered by Llama 3.3 and other Groq-hosted models.
+
+- **🌐 Multi-LLM Support**: Use your favorite models from **Groq**, **OpenAI**, **Anthropic (Claude)**, **Google Gemini**, or even **Local LLMs** (via Ollama/LM Studio).
 - **🩺 Self-Healing**: Automatically detects errors during execution and iterates until the code is clean.
-- **🛠️ Built-in Tools**: Full filesystem access and integrated Git tools.
+- **🛠️ Built-in Tools**: Full filesystem access and integrated Git tools with safety prompts.
+- **🛡️ Auto-Verification**: Automatically verifies your API keys and model configuration during setup.
 - **🎤 Natural Language Git**: Manage your repository using plain English.
 
 ## 📦 Installation
@@ -18,22 +20,22 @@ pip install git+https://github.com/rodeok/tagai.git
 
 ## ⚙️ Configuration
 
-TagAI requires a **Groq API Key**. You can get one at [Groq Cloud](https://console.groq.com/).
+TagAI supports multiple providers. You will be prompted to choose one when you first run the app.
 
-### Option 1: Setup Wizard (Recommended)
-Simply run `tagai` and follow the prompts to enter your API key. It will be saved to a local `.env` file.
+### Included Providers:
+- **Groq**: Lightning-fast inference (Llama 3.3, etc.)
+- **OpenAI**: GPT-4o, GPT-4o-mini
+- **Anthropic**: Claude 3.5 Sonnet, Opus
+- **Google Gemini**: Gemini 1.5 Pro/Flash
+- **Local**: Any OpenAI-compatible endpoint (Ollama, LM Studio)
 
-### Option 2: Environment Variable
-Alternatively, set the key in your terminal:
+### Setup Wizard
+Simply run `tagai` and follow the prompts to select your provider, model, and enter your API key. Everything is saved to a local `.env` file for you.
 
-**Windows (PowerShell):**
-```powershell
-$env:GROQ_API_KEY="your_key_here"
-```
-
-**Mac/Linux:**
+To force a reconfiguration, run:
 ```bash
-export GROQ_API_KEY="your_key_here"
+tagai
+# Type 'config' inside the interactive session
 ```
 
 ## 🚀 Usage
@@ -45,15 +47,18 @@ tagai
 
 ### Commands:
 - `build <file>`: Describe a task and have TagAI build and self-heal the file.
-- `git <cmd>`: Run raw git commands directly.
+- `git <cmd>`: Run raw git commands directly (e.g., `git status`).
+- `config`: Switch providers or models.
 - `tokens`: View current session token usage.
 - `clear`: Reset the conversation history.
-- `help`: Show the help menu.
+- `exit`: Quit the session.
 
 ### Example:
-> **You:** "initialise a git repo, add all files and make an initial commit"
+> **You:** "build a python script that fetches the weather for London"
 >
-> **TagAI:** "✅ Initialised repo... ✅ Added files... ✅ Committed 'initial commit'"
+> **TagAI:** "Building 'weather.py'... 🩺 Self-Healing Iteration 1... 🛡️ No errors detected. Build successful."
+
+---
 
 ## 📄 License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

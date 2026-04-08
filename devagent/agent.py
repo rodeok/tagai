@@ -1,6 +1,6 @@
 import os
 import json
-from groq import Groq
+import litellm
 from .tools import TOOLS, execute_tool
 from .prompts import SYSTEM_PROMPT
 from rich.console import Console
@@ -9,16 +9,23 @@ from rich.markdown import Markdown
 
 console = Console()
 
-# Global state for session tokens
+# Global state
 session_tokens = {"input": 0, "output": 0}
-client = None
-model = None
+config = {
+    "api_key": None,
+    "model": None,
+    "base_url": None
+}
 
-def init(api_key, model_id):
-    """Initialise Groq client and model."""
-    global client, model
-    client = Groq(api_key=api_key)
-    model = model_id
+def init(api_key, model, base_url=None):
+    """Initialise LLM config."""
+    global config
+    config["api_key"] = api_key
+    config["model"] = model
+    config["base_url"] = base_url
+    
+    # Optional: silence litellm logging if too verbose
+    litellm.set_verbose = False
 
 def run_agent(user_input, history, ask_permission):
     """Process a natural language request through the agent loop."""
@@ -28,13 +35,15 @@ def run_agent(user_input, history, ask_permission):
     history.append({"role": "user", "content": user_input})
     
     while True:
-        # 1. First Pass - Get response from Groq
-        response = client.chat.completions.create(
-            model=model,
+        # 1. Get response from LLM via LiteLLM
+        response = litellm.completion(
+            model=config["model"],
             messages=[{"role": "system", "content": SYSTEM_PROMPT}] + history,
             tools=TOOLS,
             tool_choice="auto",
-            stream=True
+            stream=True,
+            api_key=config["api_key"],
+            base_url=config["base_url"]
         )
         
         full_content = ""
@@ -43,16 +52,11 @@ def run_agent(user_input, history, ask_permission):
         # 2. Live Streaming Output
         with Live(console=console, refresh_per_second=4) as live:
             for chunk in response:
-                # Update usage if provided (Groq provides usage in x_groq or usage field)
-                usage = getattr(chunk, 'x_groq', None) or getattr(chunk, 'usage', None)
-                if usage and getattr(usage, 'usage', None):
-                    u = usage.usage
-                    session_tokens["input"] += u.prompt_tokens
-                    session_tokens["output"] += u.completion_tokens
-                elif usage and hasattr(usage, 'prompt_tokens'):
-                    u = usage
-                    session_tokens["input"] += u.prompt_tokens
-                    session_tokens["output"] += u.completion_tokens
+                # Update usage if provided
+                usage = getattr(chunk, 'usage', None)
+                if usage:
+                    session_tokens["input"] += getattr(usage, 'prompt_tokens', 0)
+                    session_tokens["output"] += getattr(usage, 'completion_tokens', 0)
 
                 if not chunk.choices:
                     continue
@@ -63,7 +67,7 @@ def run_agent(user_input, history, ask_permission):
                     full_content += delta.content
                     live.update(Markdown(full_content))
                 
-                # Tool calls stream (OpenAI format)
+                # Tool calls stream
                 if delta.tool_calls:
                     for tc_delta in delta.tool_calls:
                         if len(tool_calls) <= tc_delta.index:

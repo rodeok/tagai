@@ -1,12 +1,12 @@
 import sys
 from . import agent
-from .config import setup, GROQ_MODELS
+from .config import setup
 from .permissions import ask_permission
 from .tools.git_tools import _git   # direct passthrough for raw git commands
 
 BANNER = """
 ╔══════════════════════════════════════════════════════╗
-║  🤖  TagAI · Self-Healing · Git            ║
+║  🤖  TagAI · Multi-LLM · Self-Healing · Git         ║
 ║  Commands:                                           ║
 ║    exit | tokens | clear | config | help             ║
 ║    build <file>   — build + auto-heal until clean    ║
@@ -19,7 +19,7 @@ Commands:
   exit            quit (shows token summary)
   tokens          session token usage
   clear           reset conversation history
-  config          change API key or model
+  config          change provider/model/key
   help            this message
 
   build <file>    agent writes + self-heals the file
@@ -40,12 +40,11 @@ Natural language also works — just describe what you want:
 def main():
     print(BANNER)
 
-    api_key, model_id = setup()
-    agent.init(api_key, model_id)
+    api_key, model_id, base_url = setup()
+    agent.init(api_key, model_id, base_url)
 
-    label   = next((m["label"] for m in GROQ_MODELS if m["id"] == model_id), model_id)
     history = []
-    print(f"✅ Ready — \033[32m{label}\033[0m\n")
+    print(f"✅ Ready — \033[32m{model_id}\033[0m\n")
 
     while True:
         try:
@@ -74,11 +73,10 @@ def main():
             print(HELP); continue
 
         if cmd == "config":
-            api_key, model_id = setup(force_reconfigure=True)
-            agent.init(api_key, model_id)
-            label   = next((m["label"] for m in GROQ_MODELS if m["id"] == model_id), model_id)
+            api_key, model_id, base_url = setup(force_reconfigure=True)
+            agent.init(api_key, model_id, base_url)
             history = []
-            print(f"✅ Switched to \033[32m{label}\033[0m  (history cleared)\n")
+            print(f"✅ Switched to \033[32m{model_id}\033[0m  (history cleared)\n")
             continue
 
         # ── direct git passthrough ───────────────────────────────────
